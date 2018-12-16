@@ -8,6 +8,7 @@ import java.util.List;
 
 import static java.lang.Math.max;
 import static java.util.Arrays.asList;
+
 import java.lang.*;
 
 @SuppressWarnings("unused")
@@ -53,10 +54,12 @@ public class JavaDynamicTasks {
         return sb.reverse().toString();
     }
 
-    //only one test failed
+    //Ресурсоемкость = O(1)
+    //Трудоемкость = O(N)
 
-    // T = log(n)
-    //r = log(n
+    //only one test failed. я думаю, что тест со стихом неверный. в ожидаемом значении "дд", в первом есть "дд",
+    //а во втором нет. проверяла глазами работу алгоритма, я считаю, тчо он верный. проверьте тест на правильность, пожалуйста.
+    //или укажите мне на мою ошибку.
 
 
     /**
@@ -73,7 +76,7 @@ public class JavaDynamicTasks {
      */
     public static List<Integer> longestIncreasingSubSequence(List<Integer> list1) {
         int[] nums = new int[list1.size()];
-        for(int i = 0;i < nums.length;i++)
+        for (int i = 0; i < nums.length; i++)
             nums[i] = list1.get(i);
 
         if (nums == null || nums.length == 0)
@@ -152,16 +155,20 @@ public class JavaDynamicTasks {
         listReturn.toArray(retArray); // fill the array
         return retArray;
     }
-    public static int[] removeElements(String[] input, String deleteMe) {
-        int[] result = new int[];
-        for(String item : input)
-            if(!deleteMe.equals(item))
-                result.(item);
+
+    public static List removeElements(String[] input, String deleteMe) {
+        List result = new List<Integer> {
+        };
+        for (String item : input)
+            if (!deleteMe.equals(item))
+                result. (item);
 
         return result;
     }
+    //Ресурсоемкость = O(1)
+    //Трудоемкость = O(N)
 
-    //NOT END
+    //NOT END. пролемы с утилитой ArrayUtil.removeElement(buffArr, delChar); и в последнем кусочке с удалением элементов.
 
     /**
      * Самый короткий маршрут на прямоугольном поле.
