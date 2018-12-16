@@ -1,5 +1,6 @@
 package lesson3;
 
+import com.sun.xml.internal.bind.v2.TODO;
 import kotlin.NotImplementedError;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -11,7 +12,7 @@ import java.util.*;
 public class BinaryTree<T extends Comparable<T>> extends AbstractSet<T> implements CheckableSortedSet<T> {
 
     private static class Node<T> {
-        final T value;
+        T value;
 
         Node<T> left = null;
 
@@ -69,6 +70,38 @@ public class BinaryTree<T extends Comparable<T>> extends AbstractSet<T> implemen
         // TODO
         throw new NotImplementedError();
     }
+/*
+    private T minValue(Node<T> root) {
+        T minv = root.value;
+        while (root.left != null) {
+            minv = root.left.value;
+            root = root.left;
+        }
+        return minv;
+    }
+
+
+    private Node<T> removeRec(Node<T> root, Object o) {
+        T castObj = (T) o;
+
+        if (root == null) return root;
+
+        if (castObj.compareTo(root.value) < 0)
+            root.left = removeRec(root.left, o);
+        else if (castObj.compareTo(root.value) > 0)
+            root.right = removeRec(root.right, o);
+        else {
+            if (root.left == null)
+                return root.right;
+            else if (root.right == null)
+                return root.left;
+
+            root.value = minValue(root.right);
+            root.right = removeRec(root.right, root.value);
+        }
+        return root;
+    }
+    */
 
     @Override
     public boolean contains(Object o) {
@@ -87,12 +120,10 @@ public class BinaryTree<T extends Comparable<T>> extends AbstractSet<T> implemen
         int comparison = value.compareTo(start.value);
         if (comparison == 0) {
             return start;
-        }
-        else if (comparison < 0) {
+        } else if (comparison < 0) {
             if (start.left == null) return start;
             return find(start.left, value);
-        }
-        else {
+        } else {
             if (start.right == null) return start;
             return find(start.right, value);
         }
@@ -102,16 +133,40 @@ public class BinaryTree<T extends Comparable<T>> extends AbstractSet<T> implemen
 
         private Node<T> current = null;
 
-        private BinaryTreeIterator() {}
+        private Stack<Node<T>> stack;
+
+        private BinaryTreeIterator() {
+            stack = new Stack<>();
+            while (root != null) {
+                stack.push(root);
+                root = root.left;
+            }
+        }
 
         /**
          * Поиск следующего элемента
          * Средняя
          */
         private Node<T> findNext() {
-            // TODO
-            throw new NotImplementedError();
+            Node<T> next = null;
+            if (current == null) {
+                Node<T> min = root;
+                while (min.left != null) min = min.left;
+                next = min;
+            } else {
+                Node<T> tempRoot = root;
+                while (tempRoot != null) {
+                    if (tempRoot.value.compareTo(current.value) <= 0) tempRoot = tempRoot.right;
+                    else {
+                        next = tempRoot;
+                        tempRoot = tempRoot.left;
+                    }
+                }
+            }
+            return next;
         }
+        //Трудоемкость R=O(logN)
+        //Ресурсоемкость T=O(N)
 
         @Override
         public boolean hasNext() {

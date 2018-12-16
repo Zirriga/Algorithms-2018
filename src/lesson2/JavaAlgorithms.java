@@ -6,7 +6,10 @@ import kotlin.Pair;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @SuppressWarnings("unused")
 public class JavaAlgorithms {
@@ -34,11 +37,11 @@ public class JavaAlgorithms {
      * <p>
      * В случае обнаружения неверного формата файла бросить любое исключение.
      */
-    static public Pair<Integer, Integer> optimizeBuyAndSell(String inputName) {
-        ArrayList<Integer> myListOfNumbers = new ArrayList<>();
+    static public Pair<Integer, Integer> optimizeBuyAndSell(String inputName) throws IOException {
+        return null;
+        /*ArrayList<Integer> myListOfNumbers = new ArrayList<>();
         Integer first = 0;
         Integer second = 0;
-        try {
             BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(inputName)));
             String line;
             do {
@@ -56,12 +59,9 @@ public class JavaAlgorithms {
                     }
                 }
             }
-
-        } catch (Exception e) {
-            System.out.println("Input is incorrect");
         }
         Pair<Integer, Integer> myPair = new Pair<>(first, second);
-        return (myPair);
+        return (myPair); */
     }
 
     /**
@@ -111,10 +111,20 @@ public class JavaAlgorithms {
      * Х х Х
      */
     static public int josephTask(int menNumber, int choiceInterval) {
-        if (menNumber == 1)
-            return 1;
-        return (josephTask(menNumber - 1, choiceInterval) + choiceInterval - 1) % menNumber + 1;
+        int survivor = 0;
+        switch (menNumber) {
+            case 1:
+                return 1;
+            default:
+                for (int i = 1; i < menNumber; i++) {
+                    survivor = (survivor + choiceInterval) % (i + 1);
+                }
+                return survivor + 1;
+        }
     }
+    //Ресурсоемкость = O(1)
+    //Трудоемкость = O(N)
+
 
     /**
      * Наибольшая общая подстрока.
@@ -129,8 +139,30 @@ public class JavaAlgorithms {
      */
 
     static public String longestCommonSubstring(String firs, String second) {
-        throw new NotImplementedError();
+        int maxSub = 0; // length
+        String maxSubString = "";
+        if (firs.isEmpty() || second.isEmpty()) return "";
+        else {
+            int[][] arr = new int[firs.length()][second.length()];
+            for (int i = 0; i < firs.length(); i++) {
+                for (int j = 0; j < second.length(); j++) {
+                    if (firs.charAt(i) == second.charAt(j)) {
+                        if (i == 0 || j == 0)
+                            arr[i][j] = 1;
+                        else
+                            arr[i][j] = arr[i - 1][j - 1] + 1;
+                    }
+                    if (arr[i][j] > maxSub) {
+                        maxSub = arr[i][j];
+                        maxSubString = firs.substring((i - maxSub + 1), i + 1);
+                    }
+                }
+            }
+        }
+        return maxSubString;
     }
+    //Ресурсоемкость = O(1)
+    //Трудоемкость = O(N)
 
     /**
      * Число простых чисел в интервале
@@ -142,6 +174,7 @@ public class JavaAlgorithms {
      * Справка: простым считается число, которое делится нацело только на 1 и на себя.
      * Единица простым числом не считается.
      */
+
     static public int calcPrimesNumber(int limit) {
         if (limit <= 1) return 0;
 

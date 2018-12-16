@@ -2,8 +2,9 @@ package lesson1
 
 import java.io.BufferedWriter
 import java.io.File
+import java.lang.Math.abs
 import java.util.*
-import kotlin.math.abs
+import kotlin.math.*
 
 abstract class AbstractTaskTests : AbstractFileTests() {
 

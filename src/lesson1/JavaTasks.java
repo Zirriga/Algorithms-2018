@@ -3,10 +3,7 @@ package lesson1;
 import kotlin.NotImplementedError;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 @SuppressWarnings("unused")
 public class JavaTasks {
@@ -38,43 +35,28 @@ public class JavaTasks {
      * <p>
      * В случае обнаружения неверного формата файла бросить любое исключение.
      */
-    static public void sortTimes(String inputName, String outputName) {
+    static public void sortTimes(String inputName, String outputName) throws IOException {
         ArrayList<String> arr = new ArrayList<>();
-        try {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(inputName)));
-            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outputName)));
-            String line;
-            do {
-                line = reader.readLine();
+        BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(inputName)));
+        BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outputName)));
+        String line;
+        while ((line = reader.readLine()) != null) {
+            if (line.matches("^(([0-1]\\d)|(2[0-3])):[0-5]\\d:[0-5]\\d\n?$")) {
                 arr.add(line);
-            } while (line != null);
-
-
-            Integer[] intArr = new Integer[arr.size()];
-            for (int i = 0; i < arr.size(); i++) {
-                String temp = arr.get(i);
-                String name = temp.split(":")[0].trim() + temp.split(":")[1].trim() + temp.split(":")[2].trim();
-                intArr[i] = (Integer.parseInt(name));
-            }
-
-            Sorts.insertionSort(intArr);
-
-            for (int i = 0; i < arr.size(); i++) {
-                String strLine = intArr[i].toString();
-                while (strLine.length() != 6) {
-                    strLine = "0" + strLine;
-                }
-                strLine = strLine.substring(0, 1) + ":" + strLine.substring(2, 3) + ":" + strLine.substring(4, 5);
-
-                writer.write(strLine);
-                writer.newLine();
-            }
-            reader.close();
-            writer.close();
-        } catch (Exception e) {
-            System.out.println("Input is incorrect");
+            } else throw new IllegalArgumentException();
         }
+        Collections.sort(arr);
+
+        for (int i = 0; i < arr.size(); i++) {
+            writer.write(String.valueOf(arr.get(i)));
+            writer.newLine();
+        }
+        reader.close();
+        writer.close();
     }
+    //Трудоёмкость Т = O(N*LOG(N))
+    //Ресурсоёмкость R= O(N)
+
 
     /**
      * Сортировка адресов
@@ -136,32 +118,26 @@ public class JavaTasks {
      * 99.5
      * 121.3
      */
-    static public void sortTemperatures(String inputName, String outputName) {
-        ArrayList<Integer> arr = new ArrayList<>();
-        try {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(inputName)));
-            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outputName)));
-            String line;
-            do {
-                line = reader.readLine();
-                arr.add((int) (Double.parseDouble(line)) * 10);
-            } while (line != null);
-
-            Integer[] intArr = new Integer[arr.size()];
-            Sorts.insertionSort(intArr);
-
-            for (int i = 0; i < arr.size(); i++) {
-                Double strLine = ((double) intArr[i]) / 10;
-
-                writer.write(strLine.toString());
-                writer.newLine();
-            }
-            reader.close();
-            writer.close();
-        } catch (Exception e) {
-            System.out.println("Input is incorrect");
+    static public void sortTemperatures(String inputName, String outputName) throws IOException {
+        ArrayList<Double> arr = new ArrayList<>();
+        BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(inputName)));
+        BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outputName)));
+        String line;
+        while ((line = reader.readLine()) != null) {
+            double temp = Double.parseDouble(line);
+            arr.add(temp);
         }
+        Collections.sort(arr);
+
+        for (int i = 0; i < arr.size(); i++) {
+            writer.write(String.valueOf(arr.get(i)));
+            writer.newLine();
+        }
+        reader.close();
+        writer.close();
     }
+    //Трудоёмкость Т = O(N*LOG(N))
+    //Ресурсоёмкость R= O(N)
 
     /**
      * Сортировка последовательности
@@ -192,61 +168,47 @@ public class JavaTasks {
      * 2
      * 2
      */
+
     static public void sortSequence(String inputName, String outputName) {
-        ArrayList<Integer> myListOfNumbers = new ArrayList<>();
-        try {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(inputName)));
-            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outputName)));
-            String line;
-            do {
-                line = reader.readLine();
-                myListOfNumbers.add((Integer.parseInt(line)));
-            } while (line != null);
-
-            int mostMatches = 0;
-            List<Integer> popularNumbers = new ArrayList<>();
-
-            for (int i = 0; i < myListOfNumbers.size(); i++) {
-                int matches = 0;
-                int holder = myListOfNumbers.get(i);
-
-                for (int j = 0; j < myListOfNumbers.size(); j++) {
-                    if (myListOfNumbers.get(j) == holder) {
-                        matches++;
-                    }
-                }
-
-                if (matches > mostMatches) {
-                    mostMatches = matches;
-                    popularNumbers.clear();
-                    popularNumbers.add(holder);
-                }
-                if (matches == mostMatches) {
-                    if (!popularNumbers.contains(holder)) {
-                        popularNumbers.add(holder);
-                    }
-                }
-            }
-
-            Integer smallestMostPopular = Collections.min(popularNumbers);
-
-            for (Iterator<Integer> iterator = myListOfNumbers.listIterator(); iterator.hasNext(); ) {
-                int a = iterator.next();
-                if (a == smallestMostPopular) {
-                    iterator.remove();
-                    myListOfNumbers.add(a);
-                }
-            }
-            for (int i = 0; i < myListOfNumbers.size(); i++) {
-                writer.write(myListOfNumbers.get(i).toString());
-                writer.newLine();
-            }
-            reader.close();
-            writer.close();
-        } catch (Exception e) {
-            System.out.println("Input is incorrect");
-        }
+        throw new NotImplementedError();
     }
+
+       /* Map<Integer, Integer> popularNumbers = new HashMap<>();
+        BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(inputName)));
+        BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outputName)));
+        String line;
+        while ((line = reader.readLine()) != null) {
+            int keys = Integer.parseInt(line);
+            if (popularNumbers.containsKey(keys)) {
+                int val = popularNumbers.get(keys);
+                popularNumbers.put(keys, val + 1);
+            } else popularNumbers.put(keys, 1);
+        }
+        for (int i = 1; i < popularNumbers.size(); i++) {
+            if (popularNumbers.get(i) > 0) {
+                for (int j = i; j < popularNumbers.size(); j++) {
+                    writer.write(String.valueOf(getKeysByValue(popularNumbers, i)));
+                    writer.newLine();
+                }
+            }
+        }
+        reader.close();
+        writer.close();
+
+    }
+
+    public static <T, E> Set<T> getKeysByValue(Map<T, E> map, E value) {
+        Set<T> keys = new HashSet<T>();
+        for (Map.Entry<T, E> entry : map.entrySet()) {
+            if (Objects.equals(value, entry.getValue())) {
+                keys.add(entry.getKey());
+            }
+        }
+        return keys;
+        */
+
+    //Трудоёмкость Т = O(N)
+    //Ресурсоёмкость R= O(N)
 
 
     /**
