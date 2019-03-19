@@ -27,6 +27,21 @@ abstract class AbstractGraphTests {
     }
 
     fun findEulerLoop(findEulerLoop: Graph.() -> List<Graph.Edge>) {
+        val bigGraph = GraphBuilder().apply {
+            val vertexes = mutableListOf<Graph.Vertex>()
+            for (i in 'A'..'O') {
+                for (j in 'A'..'O') {
+                    vertexes += addVertex("" + i + j)
+                }
+            }
+            for (i in 0 until vertexes.size - 1) {
+                for (j in i + 1 until vertexes.size) {
+                    addConnection(vertexes[i], vertexes[j])
+                }
+            }
+        }.build()
+        val bigLoop = bigGraph.findEulerLoop()
+        bigLoop.assert(true, bigGraph)
         val graph = GraphBuilder().apply {
             val a = addVertex("A")
             val b = addVertex("B")
@@ -68,6 +83,25 @@ abstract class AbstractGraphTests {
     }
 
     fun minimumSpanningTree(minimumSpanningTree: Graph.() -> Graph) {
+        var count = 0
+        val bigGraph = GraphBuilder().apply {
+            val vertexes = mutableListOf<Graph.Vertex>()
+            for (i in 'A'..'Z') {
+                for (j in 'A'..'Z') {
+                    vertexes += addVertex("" + i + j)
+                    count++
+                }
+            }
+            count--
+            for (i in 0 until vertexes.size - 1) {
+                for (j in i + 1 until vertexes.size) {
+                    addConnection(vertexes[i], vertexes[j])
+                }
+            }
+        }.build()
+        val bigTree = bigGraph.minimumSpanningTree()
+        assertEquals(count, bigTree.edges.size)
+        assertEquals(count, bigTree.findBridges().size)
         val graph = GraphBuilder().apply {
             val a = addVertex("A")
             val b = addVertex("B")

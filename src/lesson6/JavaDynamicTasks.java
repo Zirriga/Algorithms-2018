@@ -4,10 +4,10 @@ import com.sun.deploy.util.ArrayUtil;
 import kotlin.NotImplementedError;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static java.lang.Math.max;
-import static java.util.Arrays.asList;
 
 import java.lang.*;
 
@@ -25,41 +25,51 @@ public class JavaDynamicTasks {
      * При сравнении подстрок, регистр символов *имеет* значение.
      */
     public static String longestCommonSubSequence(String first, String second) {
-        int[][] lengths = new int[first.length() + 1][second.length() + 1];
 
-        for (int i = 0; i < first.length(); i++)
-            for (int j = 0; j < second.length(); j++)
-                if (first.charAt(i) == second.charAt(j))
-                    lengths[i + 1][j + 1] = lengths[i][j] + 1;
+        int m = second.length();
+        int n = first.length();
+        int[][] L = new int[m + 1][n + 1];
+
+        //Building L[m][n] as in algorithm
+        for (int i = 0; i <= m; i++) {
+            for (int j = 0; j <= n; j++) {
+                if (i == 0 || j == 0)
+                    L[i][j] = 0;
+                else if (first.charAt(j - 1) == second.charAt(i - 1))
+                    L[i][j] = L[i - 1][j - 1] + 1;
                 else
-                    lengths[i + 1][j + 1] =
-                            Math.max(lengths[i + 1][j], lengths[i][j + 1]);
-
-        // чтение из матрицы
-        StringBuffer sb = new StringBuffer();
-        for (int x = first.length(), y = second.length();
-             x != 0 && y != 0; ) {
-            if (lengths[x][y] == lengths[x - 1][y])
-                x--;
-            else if (lengths[x][y] == lengths[x][y - 1])
-                y--;
-            else {
-                assert first.charAt(x - 1) == second.charAt(y - 1);
-                sb.append(first.charAt(x - 1));
-                x--;
-                y--;
+                    L[i][j] = max(L[i - 1][j], L[i][j - 1]);  // o = (m*n)
             }
         }
 
-        return sb.reverse().toString();
+        //To print LCS
+        int index = L[m][n];
+
+        char[] LCS = new char[index];
+
+        //Stroing characters in LCS
+        //Start from the right bottom corner character
+        int i = m, j = n;
+        while (i > 0 && j > 0) {
+            //if current character in s1 and s2 are same, then include this character in LCS[]
+            if (first.charAt(j - 1) == second.charAt(i - 1)) {
+                LCS[index - 1] = second.charAt(i - 1); // Put current character in result
+                i--;
+                j--;
+                index--; // reduce values of i, j and index
+            }
+            // compare values of L[i-1][j] and L[i][j-1] and go in direction of greater value.
+            else if (L[i - 1][j] > L[i][j - 1])
+                i--;
+            else
+                j--;
+        }
+        String retStr = new String(LCS);
+        return retStr;
     }
 
-    //Ресурсоемкость = O(1)
-    //Трудоемкость = O(N)
-
-    //only one test failed. я думаю, что тест со стихом неверный. в ожидаемом значении "дд", в первом есть "дд",
-    //а во втором нет. проверяла глазами работу алгоритма, я считаю, тчо он верный. проверьте тест на правильность, пожалуйста.
-    //или укажите мне на мою ошибку.
+    //Ресурсоемкость = O = (mn)
+    //Трудоемкость = O(mn)
 
 
     /**
@@ -73,102 +83,56 @@ public class JavaDynamicTasks {
      * Если самых длинных возрастающих подпоследовательностей несколько (как в примере),
      * то вернуть ту, в которой числа расположены раньше (приоритет имеют первые числа).
      * В примере ответами являются 2, 8, 9, 12 или 2, 5, 9, 12 -- выбираем первую из них.
+     * <p>
+     * <p>
+     * МОИ ЗАМЕТКИ:
+     * <p>
+     * переменная для сохранения длинны последовательности
+     * переменная для последовательности (массив)
+     * после программы сравнение длины, меняем только если больше
+     * <p>
+     * проходим по всемму массиву с числами так:
+     * записываем первое, сравниваем с каждым последующим и записываем, если оно больше. в конце цикла записываем в ответ, если оно больше предыдущего ответа (+ переменная подсчета кол-ва)
      */
+
     public static List<Integer> longestIncreasingSubSequence(List<Integer> list1) {
-        int[] nums = new int[list1.size()];
-        for (int i = 0; i < nums.length; i++)
-            nums[i] = list1.get(i);
+// L[i] - The longest increasing sub-sequence
+// ends with arr[i]
+        int n = list1.size();
+        ArrayList<ArrayList<Integer>>L = new ArrayList<ArrayList<Integer>>();
+        for (int i = 0; i < n; i++) {
+            L.add(new ArrayList<Integer>());
+        }
+        if (list1.isEmpty()) return list1;
+        ArrayList<Integer> temp = new ArrayList<Integer>();
+        temp.add(Integer.valueOf(list1.get(0)));
+// L[0] is equal to arr[0]
+        L.set(0, temp);
 
-        if (nums == null || nums.length == 0)
-            return null;
+        for (int i = 1; i < n; i++) {
+// do for every j less than i
+            for (int j = 0; j < i; j++) {
+                if ((list1.get(i) > list1.get(j)) && (L.get(i).size() < L.get(j).size() + 1) && (L.get(i).size() != L.get(j).size()))
+                    L.set(i, new ArrayList<Integer>(L.get(j)));
+            }
+// L[i] ends with arr[i]
+            L.get(i).add(Integer.valueOf(list1.get(i)));
+        }
 
-        int maxSubsSize = 0;
-        ArrayList<Integer> list = new ArrayList<Integer>();
+        ArrayList<Integer> max = new ArrayList<Integer>(L.get(0));
 
-        for (int num : nums) {
-            if (list.size() == 0 || num > list.get(list.size() - 1)) {
-                list.add(num);
-            } else {
-                int i = 0;
-                int j = list.size() - 1;
-
-                while (i < j) {
-                    int mid = (i + j) / 2;
-                    if (list.get(mid) < num) {
-                        i = mid + 1;
-                    } else {
-                        j = mid;
-                    }
-                }
-
-                list.set(j, num);
+        for (ArrayList<Integer> x : L) {
+            if (x.size() > max.size()) {
+                max = x;
             }
         }
-        ArrayList<Integer> listReturn = list;
-        maxSubsSize = list.size();
-
-        for (int i = 0; i < list.size(); i++) {
-            int delChar = list.get(i);
-            int[] buffArr = nums;
-            int[] anotherBuffArr = ArrayUtil.removeElement(buffArr, delChar);
-
-            ArrayList<Integer> listBuff = new ArrayList<Integer>();
-
-            for (int num : anotherBuffArr) {
-                if (listBuff.size() == 0 || num > listBuff.get(listBuff.size() - 1)) {
-                    listBuff.add(num);
-                } else {
-                    int i = 0;
-                    int j = listBuff.size() - 1;
-
-                    while (i < j) {
-                        int mid = (i + j) / 2;
-                        if (listBuff.get(mid) < num) {
-                            i = mid + 1;
-                        } else {
-                            j = mid;
-                        }
-                    }
-                    listBuff.set(j, num);
-                }
-            }
-            if (listBuff.size() == maxSubsSize) {
-                for (int i = 0; i < listBuff.size(); i++) {
-                    int first = list.get(i);
-                    int second = listBuff.get(i);
-                    int fistInd = asList(nums).indexOf(first);
-                    int secondInd = asList(nums).indexOf(second);
-
-                    if (fistInd == secondInd) continue;
-
-                    if (fistInd < secondInd) {
-                        listReturn = list;
-                        break;
-                    } else {
-                        listReturn = listBuff;
-                        break;
-                    }
-                }
-            }
-        }
-        int[] retArray = new int[listReturn.size()];
-        listReturn.toArray(retArray); // fill the array
-        return retArray;
+        return max;
     }
 
-    public static List removeElements(String[] input, String deleteMe) {
-        List result = new List<Integer> {
-        };
-        for (String item : input)
-            if (!deleteMe.equals(item))
-                result. (item);
 
-        return result;
-    }
-    //Ресурсоемкость = O(1)
-    //Трудоемкость = O(N)
+    //Ресурсоемкость =
+    //Трудоемкость =
 
-    //NOT END. пролемы с утилитой ArrayUtil.removeElement(buffArr, delChar); и в последнем кусочке с удалением элементов.
 
     /**
      * Самый короткий маршрут на прямоугольном поле.

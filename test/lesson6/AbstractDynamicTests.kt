@@ -9,10 +9,13 @@ abstract class AbstractDynamicTests {
         assertEquals("13", longestCommonSubSequence("123", "13"))
         assertEquals("здс", longestCommonSubSequence("здравствуй мир", "мы здесь"))
         assertEquals("emt ole", longestCommonSubSequence("nematode knowledge", "empty bottle"))
+        assertEquals("aegend", longestCommonSubSequence("aaatetingcheatsenabled", "leagueoflegendssucks")) // доп тест
+
         assertEquals("e kerwelkkd r", longestCommonSubSequence(
                 "oiweijgw kejrhwejelkrw kjhdkfjs hrk",
                 "perhkhk lerkerorwetp lkjklvvd durltr"
         ))
+
         assertEquals(""" дд саы чтых,
 евшнео ваа се сви дн.
         """.trimIndent(), longestCommonSubSequence(
